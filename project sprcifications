@@ -1,0 +1,326 @@
+# Restaurant Management System — Project Specification
+
+This document is the single source of truth for class names, attributes, method
+names, and shared code that everyone must follow. Since the team is not using
+header files or GitHub, this document replaces that role: it's what keeps five
+separately-written `.cpp` files compatible when they get combined into one project.
+
+
+Each person writes their part as **one `.cpp` file** — no `.h` files needed.
+
+---
+
+## 1. Naming Rules (apply to everyone, no exceptions)
+
+- Class names: `PascalCase` — e.g. `Customer`, `OrderManager`
+- Method names: `camelCase` — e.g. `addCustomer`, `calculateTotal`
+- Variable names: `camelCase` — e.g. `customerID`, `phoneNumber`
+- Every ID field is a plain `int`, always named `<entity>ID` — e.g. `customerID`, `orderID`, `tableID`, `employeeID`
+- Getter methods: `getX()` — e.g. `getName()`
+- Setter methods: `setX(...)` — e.g. `setName(string n)`
+- Yes/no check methods: `isX()` — e.g. `isAvailable()`
+
+---
+
+## 2. Shared Code — Copy This Exactly Into the Top of Your File
+
+Every member pastes this exact block at the top of their `.cpp` file (below their
+`#include`s). Nobody edits this block — if something seems missing, tell Kareem so
+he can add it here for everyone at once.
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+enum class OrderType { DineIn, Takeaway, Delivery };
+enum class OrderStatus { New, Preparing, Ready, Served, Completed, Cancelled };
+enum class TableStatus { Available, Reserved, Occupied, OutOfService };
+enum class ReservationStatus { Pending, Confirmed, Completed, Cancelled };
+enum class PaymentMethod { Cash, Card, MobilePayment };
+enum class PaymentStatus { Completed, Refunded };
+enum class DeliveryStatus { Assigned, OnTheWay, Delivered, Cancelled };
+enum class EmployeeRole { Manager, Chef, Waiter, Cashier, DeliveryDriver };
+enum class MenuCategory { Appetizer, MainCourse, Dessert, Drink };
+```
+
+---
+
+## 3. The One Rule That Matters Most
+
+**Never store another module's object directly — always store its ID instead.**
+
+Example: `Order` stores `int customerID` and `int tableID`, never `Customer` or `Table`
+objects. This is what lets everyone write and test their part completely on their
+own, and it's what Kareem relies on when combining the five files at the end.
+
+---
+
+## 4. Customer — Owner: Esraa
+
+**Class `Customer`**
+| Field | Type |
+|---|---|
+| customerID | int |
+| name | string |
+| phoneNumber | string |
+| address | string |
+| email | string |
+
+Methods: `getCustomerID()`, `getName()`, `setName(string)`, `getPhoneNumber()`, `setPhoneNumber(string)`, `getAddress()`, `setAddress(string)`, `getEmail()`, `setEmail(string)`, `displayInfo()`
+
+**Class `CustomerManager`**
+- `vector<Customer> customers`
+- `bool addCustomer(Customer c)` — reject if `customerID` already exists or `name` is empty
+- `void displayAllCustomers()`
+- `Customer* searchCustomer(int customerID)`
+- `bool updateCustomer(int customerID, ...)`
+- `void displayCustomerOrders(int customerID)` and `void displayCustomerReservations(int customerID)` — these two need Order/Reservation data too, so they're built later during integration, not inside this file
+
+---
+
+## 5. Reservation — Owner: Esraa
+
+**Class `Reservation`**
+| Field | Type |
+|---|---|
+| reservationID | int |
+| customerID | int |
+| tableID | int |
+| date | string |
+| time | string |
+| numberOfGuests | int |
+| status | ReservationStatus |
+
+**Class `ReservationManager`**
+- `vector<Reservation> reservations`
+- `bool createReservation(Reservation r)`
+- `bool confirmReservation(int reservationID)`
+- `bool cancelReservation(int reservationID)`
+- `void displayReservations()`
+- `Reservation* searchReservation(int reservationID)`
+
+---
+
+## 6. Table — Owner: Yousef
+
+**Class `Table`**
+| Field | Type |
+|---|---|
+| tableID | int |
+| capacity | int |
+| location | string |
+| status | TableStatus |
+
+**Class `TableManager`**
+- `vector<Table> tables`
+- `bool addTable(Table t)` — reject if `tableID` already exists
+- `void displayAvailableTables()`
+- `Table* searchTable(int tableID)`
+- `bool updateTableStatus(int tableID, TableStatus newStatus)`
+- `bool isTableAvailable(int tableID)`
+
+---
+
+## 7. Menu — Owner: Yousef
+
+**Class `MenuItem`**
+| Field | Type |
+|---|---|
+| itemID | int |
+| name | string |
+| price | double |
+| category | MenuCategory |
+| description | string |
+| isAvailable | bool |
+
+**Class `MenuManager`**
+- `vector<MenuItem> items`
+- `bool addItem(MenuItem item)` — reject if `itemID` already exists or `price <= 0`
+- `bool removeItem(int itemID)`
+- `bool updateItem(int itemID, ...)`
+- `MenuItem* searchItem(int itemID)`
+- `void displayMenu()`
+- `bool changeAvailability(int itemID, bool available)`
+
+---
+
+## 8. Order — Owner: Hesham
+
+**Struct `OrderItem`**
+| Field | Type |
+|---|---|
+| itemID | int |
+| itemName | string |
+| quantity | int |
+| price | double |
+
+**Class `Order`**
+| Field | Type |
+|---|---|
+| orderID | int |
+| customerID | int |
+| tableID | int (use 0 if not dine-in) |
+| items | vector<OrderItem> |
+| orderDateTime | string |
+| orderType | OrderType |
+| status | OrderStatus |
+| subtotal | double |
+| taxAmount | double |
+| serviceCharge | double |
+| totalPrice | double |
+
+**Class `OrderManager`**
+- `vector<Order> orders`
+- `int createOrder(int customerID, int tableID, OrderType type)`
+- `bool addItem(int orderID, OrderItem item)` — reject if `quantity <= 0`
+- `bool removeItem(int orderID, int itemID)`
+- `bool changeQuantity(int orderID, int itemID, int newQty)`
+- `double calculateSubtotal(int orderID)`
+- `double calculateTax(int orderID)`
+- `double calculateTotal(int orderID)`
+- `bool cancelOrder(int orderID)`
+- `bool updateOrderStatus(int orderID, OrderStatus newStatus)` — must reject invalid transitions (see below)
+- `void displayOrderDetails(int orderID)`
+- `Order* searchOrder(int orderID)`
+
+**Valid status transitions only:**
+`New → Preparing → Ready → Served → Completed`
+`Cancelled` is allowed from `New`, `Preparing`, or `Ready` — never from `Served` or `Completed`.
+
+---
+
+## 9. Employee — Owner: Eman
+
+**Base class `Employee`** (abstract — has at least one pure virtual method)
+| Field | Type |
+|---|---|
+| employeeID | int |
+| name | string |
+| phoneNumber | string |
+| salary | double |
+| isActive | bool |
+| role | EmployeeRole |
+
+- `virtual void displayInfo()`
+- `virtual ~Employee()`
+
+**Derived classes (public inheritance):** `Manager`, `Chef`, `Waiter`, `Cashier`, `DeliveryDriver`
+- `DeliveryDriver` adds: `string vehicleType`
+- The rest can stay minimal if time is short
+
+**Class `EmployeeManager`**
+- `vector<Employee*> employees` (remember to `delete` each pointer in the destructor)
+- `bool addEmployee(Employee* e)` — reject if `employeeID` already exists
+- `Employee* searchEmployee(int employeeID)`
+- `void displayEmployee(int employeeID)`
+- `bool updateEmployee(int employeeID, ...)`
+- `bool changeAvailability(int employeeID, bool active)`
+- `void displayByRole(EmployeeRole role)`
+
+---
+
+## 10. Kitchen — Owner: Eman
+
+**Class `KitchenManager`**
+Works directly with the `orders` list from `OrderManager` (passed in or referenced).
+- `void viewPendingOrders()`
+- `bool startPreparing(int orderID)` — sets status to `Preparing`
+- `bool markReady(int orderID)` — only allowed if current status is `Preparing`
+- `void displayPreparedOrders()`
+
+---
+
+## 11. Payment — Owner: Kareem
+
+**Class `Payment`**
+| Field | Type |
+|---|---|
+| paymentID | int |
+| orderID | int |
+| amount | double |
+| method | PaymentMethod |
+| paymentDateTime | string |
+| status | PaymentStatus |
+
+**Class `PaymentManager`**
+- `vector<Payment> payments`
+- `int processPayment(int orderID, double amount, PaymentMethod method)`
+- `void displayPaymentDetails(int paymentID)`
+- `bool refundPayment(int paymentID)`
+- `void generateReceipt(int paymentID)`
+- `void viewPaymentHistory()`
+
+---
+
+## 12. Delivery — Owner: Kareem
+
+**Class `Delivery`**
+| Field | Type |
+|---|---|
+| deliveryID | int |
+| orderID | int |
+| customerID | int |
+| deliveryAddress | string |
+| driverEmployeeID | int |
+| status | DeliveryStatus |
+| estimatedTime | string |
+| actualDeliveryTime | string |
+| deliveryFee | double |
+
+**Class `DeliveryManager`**
+- `vector<Delivery> deliveries`
+- `int assignDelivery(int orderID, int driverEmployeeID, string address)` — reject if the driver is not active/available
+- `void trackDeliveryStatus(int deliveryID)`
+- `bool updateDeliveryStatus(int deliveryID, DeliveryStatus newStatus)`
+- `void viewAllDeliveries()`
+- `double calculateDeliveryFee(int deliveryID)`
+
+---
+
+## 13. Reports — Owner: Kareem (built last, needs everyone else's data)
+
+**Class `ReportManager`**
+Uses data from `OrderManager`, `PaymentManager`, `EmployeeManager`, `DeliveryManager`.
+- `void generateDailySalesReport(string date)`
+- `void generateMonthlyRevenueReport(string month)`
+- `void generateTopSellingItemsReport()`
+- `void generateEmployeePerformanceReport()`
+- `void generateDeliveryReport()`
+
+---
+
+## 14. Validation — Everyone's Responsibility (not a separate module)
+
+Each module validates its own inputs directly inside its own `add`/`update` methods.
+Minimum required checks, per the project description:
+
+- IDs must be unique and valid
+- Quantities must be greater than zero
+- Prices must be greater than or equal to zero
+- Phone numbers must follow a valid format
+- Required fields (like name) must not be empty
+- Dates and times must be valid and logical
+
+---
+
+## 15. Main Menu & Integration — Owner: Kareem
+
+The final program has one `main()` (everyone else's test `main()` gets removed when
+their file is combined). The main menu matches the required options:
+
+1. Employee Management
+2. Kitchen Management
+3. Payment Management
+4. Delivery Management
+5. Reports
+6. Search
+7. Validation
+0. Exit
+
+`RestaurantSystem` — the class that owns one instance of every manager above
+(`CustomerManager`, `TableManager`, `MenuManager`, `ReservationManager`,
+`OrderManager`, `EmployeeManager`, `KitchenManager`, `PaymentManager`,
+`DeliveryManager`, `ReportManager`) and runs this menu loop. Only this class is
+allowed to make different managers work together.
