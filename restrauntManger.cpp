@@ -971,34 +971,34 @@ public:
                 << setw(10) << "Price"
                 << setw(35) << "Description"
                 << setw(10) << "Avilability" << endl;
-            cout << string(90, '=') << endl;
+            cout << string(90, '_') << endl;
             cout << string(39, ' ') + "Appetizers" + string(39, ' ') << endl;
-			cout << string(90, '=') << endl;
+			cout << string(90, '_') << endl;
             for (const MenuItem& item : items) {
                 if (item.getCategory() == MenuCategory::Appetizer) {
                     printItemRow(item);
                 }
             }
-			cout << string(90, '=') << endl;
+			cout << string(90, '_') << endl;
             cout << string(39, ' ') + "Main Course" + string(39, ' ') << endl;
-			cout << string(90, '=') << endl;
+			cout << string(90, '_') << endl;
             for (const MenuItem& item : items) {
                 if (item.getCategory() == MenuCategory::MainCourse) {
                     printItemRow(item);
 
                 }
             }
-			cout << string(90, '=') << endl;
+			cout << string(90, '_') << endl;
             cout << string(39, ' ') + "Desserts" + string(39, ' ') << endl;
-			cout << string(90, '=') << endl;
+			cout << string(90, '_') << endl;
             for (const MenuItem& item : items) {
                 if (item.getCategory() == MenuCategory::Dessert) {
                     printItemRow(item);
                 }
             }
-			cout << string(90, '=') << endl;
+			cout << string(90, '_') << endl;
             cout << string(39, ' ') + "Drinks" + string(39, ' ') << endl;
-			cout << string(90, '=') << endl;
+			cout << string(90, '_') << endl;
             for (const MenuItem& item : items) {
                 if (item.getCategory() == MenuCategory::Drink) {
                     printItemRow(item);
