@@ -25,6 +25,7 @@ enum class DeliveryStatus { Assigned, OnTheWay, Delivered, Cancelled };
 enum class EmployeeRole { Manager, Chef, Waiter, Cashier, DeliveryDriver };
 enum class MenuCategory { Appetizer, MainCourse, Dessert, Drink };
 
+
 // ============================================================================
 // Helper to print OrderStatus as text
 // ============================================================================
@@ -111,14 +112,6 @@ void clearScreen() {//yousef
 }
 
 
-//centeralized validation functions
-
-
-
-
-
-
-
 
 // ============================================================================
 // CENTRALIZED INPUT / UI HELPERS
@@ -138,10 +131,10 @@ namespace UI {
 
     void title(const string& text) {
         cout << CYAN << BOLD
-             << "\n============================================================\n"
-             << "  " << text << "\n"
-             << "============================================================\n"
-             << RESET;
+            << "\n============================================================\n"
+            << "  " << text << "\n"
+            << "============================================================\n"
+            << RESET;
     }
 
     void pause() {
@@ -230,7 +223,7 @@ namespace UI {
 
     bool isValidPhone(const string& phone) {
         if (phone.size() < 7 || phone.size() > 15) return false;
-        if (!all_of(phone.begin(), phone.end(), [](unsigned char c){ return isdigit(c); })) return false;
+        if (!all_of(phone.begin(), phone.end(), [](unsigned char c) { return isdigit(c); })) return false;
         return true;
     }
 
@@ -244,15 +237,15 @@ namespace UI {
 
     bool isValidDate(const string& date) {
         if (date.size() != 10 || date[4] != '-' || date[7] != '-') return false;
-        for (size_t i=0; i<date.size(); ++i) {
+        for (size_t i = 0; i < date.size(); ++i) {
             if (i == 4 || i == 7) continue;
             if (!isdigit(static_cast<unsigned char>(date[i]))) return false;
         }
-        int year = stoi(date.substr(0,4));
-        int month = stoi(date.substr(5,2));
-        int day = stoi(date.substr(8,2));
+        int year = stoi(date.substr(0, 4));
+        int month = stoi(date.substr(5, 2));
+        int day = stoi(date.substr(8, 2));
         if (year < 2000 || month < 1 || month > 12 || day < 1) return false;
-        int daysInMonth[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+        int daysInMonth[] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
         bool leap = (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0);
         if (leap) daysInMonth[1] = 29;
         return day <= daysInMonth[month - 1];
@@ -268,11 +261,11 @@ namespace UI {
 
     bool isValidTime(const string& value) {
         if (value.size() != 5 || value[2] != ':') return false;
-        for (size_t i=0; i<value.size(); ++i) {
+        for (size_t i = 0; i < value.size(); ++i) {
             if (i == 2) continue;
             if (!isdigit(static_cast<unsigned char>(value[i]))) return false;
         }
-        int h = stoi(value.substr(0,2)), m = stoi(value.substr(3,2));
+        int h = stoi(value.substr(0, 2)), m = stoi(value.substr(3, 2));
         return h >= 0 && h <= 23 && m >= 0 && m <= 59;
     }
 
@@ -357,19 +350,19 @@ public:
         }
 
         cout << left
-             << setw(8) << "ID"
-             << setw(24) << "Name"
-             << setw(18) << "Phone"
-             << setw(32) << "Address"
-             << setw(30) << "Email" << "\n";
+            << setw(8) << "ID"
+            << setw(24) << "Name"
+            << setw(18) << "Phone"
+            << setw(32) << "Address"
+            << setw(30) << "Email" << "\n";
         cout << string(112, '-') << "\n";
         for (const auto& cust : customers) {
             cout << left
-                 << setw(8) << cust.getCustomerID()
-                 << setw(24) << cust.getName()
-                 << setw(18) << cust.getPhoneNumber()
-                 << setw(32) << cust.getAddress()
-                 << setw(30) << cust.getEmail() << "\n";
+                << setw(8) << cust.getCustomerID()
+                << setw(24) << cust.getName()
+                << setw(18) << cust.getPhoneNumber()
+                << setw(32) << cust.getAddress()
+                << setw(30) << cust.getEmail() << "\n";
         }
     }
 
@@ -2438,7 +2431,7 @@ private:
 public:
     RestaurantSystem()
         : kitchen(orderManager),
-          reportManager(orderManager, paymentManager, employeeManager, deliveryManager)
+        reportManager(orderManager, paymentManager, employeeManager, deliveryManager)
     {
     }
 
@@ -2450,16 +2443,16 @@ public:
             menuTitle("RESTAURANT MANAGEMENT SYSTEM");
 
             cout << "1. Customer Management\n"
-                 << "2. Table Management\n"
-                 << "3. Menu Management\n"
-                 << "4. Reservation Management\n"
-                 << "5. Order Management\n"
-                 << "6. Employee Management\n"
-                 << "7. Kitchen Management\n"
-                 << "8. Payment Management\n"
-                 << "9. Delivery Management\n"
-                 << "10. Reports\n"
-                 << "0. Exit\n";
+                << "2. Table Management\n"
+                << "3. Menu Management\n"
+                << "4. Reservation Management\n"
+                << "5. Order Management\n"
+                << "6. Employee Management\n"
+                << "7. Kitchen Management\n"
+                << "8. Payment Management\n"
+                << "9. Delivery Management\n"
+                << "10. Reports\n"
+                << "0. Exit\n";
 
             int choice = UI::readInt("Choice: ", 0, 10);
 
@@ -2514,10 +2507,10 @@ private:
             menuTitle("CUSTOMER MANAGEMENT");
 
             cout << "1. Add Customer\n"
-                 << "2. Display All\n"
-                 << "3. Search Customer\n"
-                 << "4. Update Customer\n"
-                 << "0. Back\n";
+                << "2. Display All\n"
+                << "3. Search Customer\n"
+                << "4. Update Customer\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 4);
 
@@ -2570,9 +2563,9 @@ private:
             {
                 menuTitle("SEARCH CUSTOMER BY");
                 cout << "1. Customer ID\n"
-                     << "2. Phone Number\n"
-                     << "3. Email\n"
-                     << "0. Back\n";
+                    << "2. Phone Number\n"
+                    << "3. Email\n"
+                    << "0. Back\n";
 
                 int searchChoice = UI::readInt("Choice: ", 0, 3);
                 Customer* customer = nullptr;
@@ -2598,21 +2591,21 @@ private:
                     if (customer)
                     {
                         cout << left
-                             << setw(8) << "ID"
-                             << setw(24) << "Name"
-                             << setw(18) << "Phone"
-                             << setw(32) << "Address"
-                             << setw(30) << "Email"
-                             << "\n"
-                             << string(112, '-') << "\n";
+                            << setw(8) << "ID"
+                            << setw(24) << "Name"
+                            << setw(18) << "Phone"
+                            << setw(32) << "Address"
+                            << setw(30) << "Email"
+                            << "\n"
+                            << string(112, '-') << "\n";
 
                         cout << left
-                             << setw(8) << customer->getCustomerID()
-                             << setw(24) << customer->getName()
-                             << setw(18) << customer->getPhoneNumber()
-                             << setw(32) << customer->getAddress()
-                             << setw(30) << customer->getEmail()
-                             << "\n";
+                            << setw(8) << customer->getCustomerID()
+                            << setw(24) << customer->getName()
+                            << setw(18) << customer->getPhoneNumber()
+                            << setw(32) << customer->getAddress()
+                            << setw(30) << customer->getEmail()
+                            << "\n";
                     }
                     else
                     {
@@ -2667,11 +2660,11 @@ private:
             menuTitle("TABLE MANAGEMENT");
 
             cout << "1. Add Table\n"
-                 << "2. Display Available\n"
-                 << "3. Search Table\n"
-                 << "4. Update Status\n"
-                 << "5. Assign Table\n"
-                 << "0. Back\n";
+                << "2. Display Available\n"
+                << "3. Search Table\n"
+                << "4. Update Status\n"
+                << "5. Assign Table\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 5);
 
@@ -2702,7 +2695,7 @@ private:
                 }
 
                 if (tableManager.addTable(
-                        Table(id, capacity, location, TableStatus::Available)))
+                    Table(id, capacity, location, TableStatus::Available)))
                 {
                     UI::success("Table added successfully.");
                 }
@@ -2726,9 +2719,9 @@ private:
                 if (table)
                 {
                     cout << "ID: " << table->getTableID()
-                         << " | Capacity: " << table->getCapacity()
-                         << " | Location: " << table->getLocation()
-                         << " | Status: " << table->getStatusString() << "\n";
+                        << " | Capacity: " << table->getCapacity()
+                        << " | Location: " << table->getLocation()
+                        << " | Status: " << table->getStatusString() << "\n";
                 }
                 else
                 {
@@ -2780,11 +2773,11 @@ private:
             menuTitle("MENU MANAGEMENT");
 
             cout << "1. Add Item\n"
-                 << "2. Remove Item\n"
-                 << "3. Search Item\n"
-                 << "4. Display Menu\n"
-                 << "5. Change Availability\n"
-                 << "0. Back\n";
+                << "2. Remove Item\n"
+                << "3. Search Item\n"
+                << "4. Display Menu\n"
+                << "5. Change Availability\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 5);
 
@@ -2826,7 +2819,7 @@ private:
                 }
 
                 if (menuManager.addItem(
-                        MenuItem(id, name, price, (MenuCategory)category, description, true)))
+                    MenuItem(id, name, price, (MenuCategory)category, description, true)))
                 {
                     UI::success("Item added successfully.");
                 }
@@ -2856,9 +2849,9 @@ private:
                 if (item)
                 {
                     cout << "ID: " << item->getItemID()
-                         << " | " << item->getName()
-                         << " | Price: " << fixed << setprecision(2) << item->getPrice()
-                         << " | " << item->getCategoryString() << "\n";
+                        << " | " << item->getName()
+                        << " | Price: " << fixed << setprecision(2) << item->getPrice()
+                        << " | " << item->getCategoryString() << "\n";
                 }
                 else
                 {
@@ -2903,10 +2896,10 @@ private:
             menuTitle("RESERVATION MANAGEMENT");
 
             cout << "1. Create Reservation\n"
-                 << "2. Confirm\n"
-                 << "3. Cancel\n"
-                 << "4. Display All\n"
-                 << "0. Back\n";
+                << "2. Confirm\n"
+                << "3. Cancel\n"
+                << "4. Display All\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 4);
 
@@ -2966,7 +2959,7 @@ private:
 
                 reservationManager.createReservation(
                     Reservation(reservationId, customerId, tableId,
-                                date, time, guests, ReservationStatus::Pending));
+                        date, time, guests, ReservationStatus::Pending));
 
                 pause();
             }
@@ -2998,12 +2991,12 @@ private:
             menuTitle("ORDER MANAGEMENT");
 
             cout << "1. Create Order\n"
-                 << "2. Add Item\n"
-                 << "3. Update Status\n"
-                 << "4. Cancel Order\n"
-                 << "5. Display Order\n"
-                 << "6. List All\n"
-                 << "0. Back\n";
+                << "2. Add Item\n"
+                << "3. Update Status\n"
+                << "4. Cancel Order\n"
+                << "5. Display Order\n"
+                << "6. List All\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 6);
 
@@ -3085,9 +3078,9 @@ private:
                 int quantity = UI::readInt("Enter Quantity: ", 1, 1000000);
 
                 if (orderManager.addItem(
-                        orderId,
-                        OrderItem(itemId, menuItem->getName(),
-                                  quantity, menuItem->getPrice())))
+                    orderId,
+                    OrderItem(itemId, menuItem->getName(),
+                        quantity, menuItem->getPrice())))
                 {
                     UI::success("Item added to order.");
                 }
@@ -3137,12 +3130,12 @@ private:
             menuTitle("EMPLOYEE MANAGEMENT");
 
             cout << "1. Add Employee\n"
-                 << "2. Display All\n"
-                 << "3. Search\n"
-                 << "4. Update\n"
-                 << "5. Change Availability\n"
-                 << "6. Display By Role\n"
-                 << "0. Back\n";
+                << "2. Display All\n"
+                << "3. Search\n"
+                << "4. Update\n"
+                << "5. Change Availability\n"
+                << "6. Display By Role\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 6);
             vector<Employee*>& employees = employeeManager.getEmployees();
@@ -3272,10 +3265,10 @@ private:
             menuTitle("KITCHEN MANAGEMENT");
 
             cout << "1. View Pending\n"
-                 << "2. Start Preparing\n"
-                 << "3. Mark Ready\n"
-                 << "4. Display Prepared\n"
-                 << "0. Back\n";
+                << "2. Start Preparing\n"
+                << "3. Mark Ready\n"
+                << "4. Display Prepared\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 4);
 
@@ -3319,11 +3312,11 @@ private:
             menuTitle("PAYMENT MANAGEMENT");
 
             cout << "1. Process Payment\n"
-                 << "2. Display Details\n"
-                 << "3. Refund\n"
-                 << "4. Receipt\n"
-                 << "5. History\n"
-                 << "0. Back\n";
+                << "2. Display Details\n"
+                << "3. Refund\n"
+                << "4. Receipt\n"
+                << "5. History\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 5);
 
@@ -3424,10 +3417,10 @@ private:
             menuTitle("DELIVERY MANAGEMENT");
 
             cout << "1. Assign Delivery\n"
-                 << "2. Track Status\n"
-                 << "3. Update Status\n"
-                 << "4. View All\n"
-                 << "0. Back\n";
+                << "2. Track Status\n"
+                << "3. Update Status\n"
+                << "4. View All\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 4);
 
@@ -3506,7 +3499,7 @@ private:
                     0, 3);
 
                 if (deliveryManager.updateDeliveryStatus(
-                        deliveryId, (DeliveryStatus)status))
+                    deliveryId, (DeliveryStatus)status))
                 {
                     UI::success("Delivery status updated successfully.");
                 }
@@ -3528,11 +3521,11 @@ private:
             menuTitle("REPORTS");
 
             cout << "1. Daily Sales\n"
-                 << "2. Monthly Revenue\n"
-                 << "3. Top Selling Items\n"
-                 << "4. Employee Performance\n"
-                 << "5. Delivery Report\n"
-                 << "0. Back\n";
+                << "2. Monthly Revenue\n"
+                << "3. Top Selling Items\n"
+                << "4. Employee Performance\n"
+                << "5. Delivery Report\n"
+                << "0. Back\n";
 
             int choice = UI::readInt("Choice: ", 0, 5);
 
